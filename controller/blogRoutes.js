@@ -18,15 +18,17 @@ const verifyToken = async (req, res, next)=>{
   next()
 }
 
-//5
+//5 && 14a,c
 routes.get('/allpost', async (req, res)=>{
-  const blogs = await blogModel.find()
+  const limitValue = 20
+  const blogs = await blogModel.find().limit(limitValue).skip((req.query.page-1)*limitValue).sort({timestamp: -1})
   res.send(blogs)
 })
 
-//6
-routes.get('blog', async (req, res)=>{
-  const 
+//6 && 15
+routes.get('/blog/:id', async (req, res)=>{
+  const getBlog = await blogModel.findById({_id: req.params.id})
+  res.send(getBlog)
 })
 
 //7
