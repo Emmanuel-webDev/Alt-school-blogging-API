@@ -21,13 +21,17 @@ const verifyToken = async (req, res, next)=>{
 //5 && 14a,c
 routes.get('/allpost', async (req, res)=>{
   const limitValue = 20
-  const blogs = await blogModel.find().limit(limitValue).skip((req.query.page-1)*limitValue).sort({timestamp: -1})
+  const blogs = await blogModel.find({state:"published"}).limit(limitValue).skip((req.query.page-1)*limitValue).sort({timestamp: -1})
   res.send(blogs)
 })
 
 //6 && 15
 routes.get('/blog/:id', async (req, res)=>{
-  const getBlog = await blogModel.findById({_id: req.params.id})
+  const getBlog = await blogModel.findOne({_id: req.params.id, state:"published"})
+
+  if(!getBlog){
+    return res.send('No blog')
+  }
   res.send(getBlog)
 })
 
@@ -79,9 +83,10 @@ routes.post('/deleteBlog/:id', verifyToken,async (req, res)=>{
 
 //12
 routes.get('/personalBlogs', verifyToken, async (req, res)=>{
-  const userBlog = await blogModel.aggregate([{
-    $match:{author: req.user._id}
-  }])
+  const userBlog = await blogModel.aggregate([
+    { $match:{author: req.user._id, state:"draft"}},
+    {$limit: 5}
+])
 
   if(userBlog.length === 0){
     return res.send('No post yet')
