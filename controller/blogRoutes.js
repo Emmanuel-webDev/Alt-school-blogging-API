@@ -37,12 +37,33 @@ routes.post('/createBlog', verifyToken, async (req, res)=>{
       title: req.body.title,
       description: req.body.description,
       tags: req.body.tags,
+      state: req.body.state,
       timestamp: new Date(),
       body: req.body.body,
       author: req.user._id
     })
     await newBlog.save()
     res.send(newBlog)
+})
+
+//9
+routes.post('/publish/:id', verifyToken, async (req, res)=>{
+const {state} = (req.body);
+const  currentState  = "published"
+req.body.state = currentState
+
+const publish = new blogModel({
+  title: req.body.title,
+  description: req.body.description,
+  tags: req.body.tags,
+  state:req.body.state,
+  timestamp: new Date(),
+  body: req.body.body,
+  author: req.user._id
+})
+await publish.save()
+res.send(publish)
+
 })
 
 //10

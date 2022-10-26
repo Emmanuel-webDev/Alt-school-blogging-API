@@ -10,7 +10,13 @@ const schema = mongoose.Schema({
         required: true
     },
     tags:[{type:String}],
-   
+//4 & 8
+   state:{
+    type:String,
+    enum:['draft', "published"],
+    default: "draft"
+   },
+
     timestamp: Date,
     body:{
         type:String,
