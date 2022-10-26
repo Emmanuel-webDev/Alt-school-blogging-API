@@ -6,6 +6,7 @@ const users = require('../model/userModel')
 
 const routes = express.Router()
 
+//2
 routes.post('/signup', async (req, res)=>{
 const {first_name, last_name, email, password} = req.body
 
@@ -23,6 +24,7 @@ const newUser = new users({
 
 })
 
+//3
 routes.post('/login', async (req, res)=>{
 const {email, password} =  (req.body)
 
