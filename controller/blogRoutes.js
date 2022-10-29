@@ -26,8 +26,10 @@ routes.get('/allpost', async (req, res)=>{
 })
 
 //6 && 15
+let readCount = 0
 routes.get('/blog/:id', async (req, res)=>{
-  const getBlog = await blogModel.findOne({_id: req.params.id, state:"published"})
+  let getBlog = await blogModel.findOne({_id: req.params.id, state:"published"})
+   getBlog.read_count = readCount++
 
   if(!getBlog){
     return res.send('No blog')
@@ -36,7 +38,7 @@ routes.get('/blog/:id', async (req, res)=>{
 })
 
 //7
-let readCount = 0
+
 routes.post('/createBlog', verifyToken, async (req, res)=>{
   const {body, reading_time, read_count} = req.body
 
@@ -44,7 +46,6 @@ const amountOfWords = body.split(" ").length
 const timeTaken = Math.round(amountOfWords / 200)
 req.body.reading_time = timeTaken
 
-req.body.read_count = readCount++
 
     const newBlog = new blogModel({
       title: req.body.title,
@@ -52,7 +53,6 @@ req.body.read_count = readCount++
       tags: req.body.tags,
       state: req.body.state,
       reading_time: req.body.reading_time,
-      read_count: req.body.read_count,
       timestamp: new Date(),
       body: req.body.body,
       author: req.user
