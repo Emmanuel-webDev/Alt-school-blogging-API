@@ -36,15 +36,26 @@ routes.get('/blog/:id', async (req, res)=>{
 })
 
 //7
+let readCount = 0
 routes.post('/createBlog', verifyToken, async (req, res)=>{
+  const {body, reading_time, read_count} = req.body
+
+const amountOfWords = body.split(" ").length
+const timeTaken = Math.round(amountOfWords / 200)
+req.body.reading_time = timeTaken
+
+req.body.read_count = readCount++
+
     const newBlog = new blogModel({
       title: req.body.title,
       description: req.body.description,
       tags: req.body.tags,
       state: req.body.state,
+      reading_time: req.body.reading_time,
+      read_count: req.body.read_count,
       timestamp: new Date(),
       body: req.body.body,
-      author: req.user._id
+      author: req.user
     })
     await newBlog.save()
     res.send(newBlog)
@@ -81,7 +92,7 @@ routes.post('/deleteBlog/:id', verifyToken,async (req, res)=>{
  const del = await blogModel.findByIdAndRemove({_id: req.params.id})
 })
 
-//12
+//12a,b
 routes.get('/personalBlogs', verifyToken, async (req, res)=>{
   const userBlog = await blogModel.aggregate([
     { $match:{author: req.user._id, state:"draft"}},
@@ -95,5 +106,15 @@ routes.get('/personalBlogs', verifyToken, async (req, res)=>{
   res.send(userBlog)
 })
 
+//14b
+routes.get('/search', async(req, res)=>{
+const getPost = await blogModel.aggregate([{$match: {title:{$regex: req.query.title, $options: "i"}}}])
+
+if(getPost.length === 0){
+  return res.send('No Blog found')
+}
+
+res.send(getPost)
+})
 
 module.exports = routes

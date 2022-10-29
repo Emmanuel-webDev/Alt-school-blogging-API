@@ -16,7 +16,12 @@ const schema = mongoose.Schema({
     enum:['draft', "published"],
     default: "draft"
    },
-
+   reading_time:{
+    type: Number,
+   },
+   read_count:{
+    type: Number
+   },
     timestamp: Date,
     body:{
         type:String,
