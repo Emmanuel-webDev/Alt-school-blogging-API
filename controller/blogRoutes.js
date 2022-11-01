@@ -10,7 +10,7 @@ const verifyToken = async (req, res, next)=>{
   const token = req.cookies.access_token
   if(!token) return res.status(403).send('Forbidden');
 
-  const verify = jwt.verify(token, "secret-word")
+  const verify = jwt.verify(token, process.env.SECRET)
   const user = await users.findById(verify.id)
   req.user = user
   if(!verify) return res.status(403).send('Forbidden')
@@ -30,7 +30,7 @@ let readCount = 0
 routes.get('/blog/:id', async (req, res)=>{
   let getBlog = await blogModel.findOne({_id: req.params.id, state:"published"})
    getBlog.read_count = readCount++
-
+   
   if(!getBlog){
     return res.send('No blog')
   }
@@ -63,15 +63,25 @@ req.body.reading_time = timeTaken
 
 //9
 routes.post('/publish/:id', verifyToken, async (req, res)=>{
-const {state} = (req.body);
+const {state, body} = (req.body);
+
 const  currentState  = "published"
+if(req.body.state === currentState){
+  return res.send('Blog already published')
+}
 req.body.state = currentState
+
+
+const amountOfWords = body.split(" ").length
+const timeTaken = Math.round(amountOfWords / 200)
+req.body.reading_time = timeTaken
 
 const publish = new blogModel({
   title: req.body.title,
   description: req.body.description,
   tags: req.body.tags,
   state:req.body.state,
+  reading_time:req.body.reading_time,
   timestamp: new Date(),
   body: req.body.body,
   author: req.user._id

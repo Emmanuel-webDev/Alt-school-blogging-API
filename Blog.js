@@ -15,10 +15,7 @@ app.use(cookie())
 app.use(usersRoutes)
 app.use(blogRoutes)
   
-app.listen(3030, ()=>{
-    console.log('Help me Lord')
-
-})
+app.listen(process.env.PORT || 3030)
 
 })
 

@@ -40,7 +40,7 @@ if(!checkCode){
 }
 
 //authentication
-const authenticate = jwt.sign({id : existingUser._id, dt : new Date()}, "secret-word", {expiresIn: "1hr"})
+const authenticate = jwt.sign({id : existingUser._id, dt : new Date()}, process.env.SECRET, {expiresIn: "1hr"})
 
 res.cookie("access_token", authenticate, {
     httpOnly:true,
